@@ -1,0 +1,111 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <math.h>
+#include <vector>
+#include "define.h"
+
+using namespace std;
+
+/*-*-c++-*-*/
+
+bool contains(vector<int> v, int i);
+int escape(vector<int> list);
+int random_walk(vector<int> list_others);
+double scouter(int met, int vis, int acq);
+double turn(int met, int acq);
+
+int action(int *sugar_neighbor_info, int *others_neighbor_info, int sugar, int met, int vis, int acq){
+
+  //視覚情報と自分の状態から行動を決定
+
+  //sugar_neighbor_info[0] 上視界内に現在地より砂糖が多い場所があれば1, それ以外は0
+  //sugar_neighbor_info[1] 下視界内に現在地より砂糖が多い場所があれば1, それ以外は0
+  //sugar_neighbor_info[2] 左視界内に現在地より砂糖が多い場所があれば1, それ以外は0
+  //sugar_neighbor_info[3] 右視界内に現在地より砂糖が多い場所があれば1, それ以外は0
+
+  //others_neighbor_info[0] 上近傍で他のエージェントに接していれば1, それ以外は0
+  //others_neighbor_info[1] 下近傍で他のエージェントに接していれば1, それ以外は0
+  //others_neighbor_info[2] 左近傍で他のエージェントに接していれば1, それ以外は0
+  //others_neighbor_info[3] 右近傍で他のエージェントに接していれば1, それ以外は0
+
+  //sugar 現在の砂糖保有量
+  //met   １ターンあたりの砂糖消費量
+  //vis   視界の大きさ
+  //acq   1ターンに摂取できる砂糖の量
+
+  //行動出力 0:上 1:下 2:左 3:右 4:停止 
+
+  int i, j, k;
+
+  vector<int> list_sugar;
+  vector<int> list_others;
+
+  int direction, rnd;
+
+  for(i=0;i<4;i++){
+    if(sugar_neighbor_info[i] == 1){ 
+      list_sugar.push_back(i);
+    }
+  }
+  for(i=0;i<4;++i){
+    if(others_neighbor_info[i] == 1){
+      list_others.push_back(i);
+    }
+  }
+
+  if(met == 1 || met == 12 || vis < 5 || sugar > 8000 || turn() > 320){
+    direction = escape(list_sugar);
+  }else if(list_others.size() == 4){
+    direction = 4; 
+  }else if(list_sugar.size() > 0){
+    if(sugar < met * (320 - acq) * 50 ){
+      direction = list_sugar[rand()%list_sugar.size()];
+    }else{
+      direction = random_walk(list_others);
+    }
+  }else if(list_sugar.size() == 0){
+    direction = random_walk(list_others);
+  }
+  return direction;
+}
+
+bool contains(vector<int> v, int i){
+  vector<int>::iterator it;
+  for(it=v.begin();it!=v.end();++it){
+    if(*it == i){
+      return true;
+    }
+  }
+  return false;
+}
+
+int escape(vector<int> list){
+  int rnd;
+  if(list.size() == 4){
+    return rand()%4;
+  }else{
+    do{
+      rnd = rand()%4;
+    }while(contains(list, rnd));
+    return rnd;
+  }
+}
+
+int random_walk(vector<int> list_others){
+  int rnd;
+  if(list_others.size() == 4) return rand()%4;
+  do{
+    rnd = rand()%5;
+    if (rnd==4) rnd = 0;
+  }while(contains(list_others, rnd));
+  return rnd;
+}
+
+double scouter(int met, int vis, int acq){
+  return vis * 1000 + (12 - met) * 1000 + acq;
+}
+
+double turn(int met, int acq){ 
+  return (4000 * met - 5000)/acq;
+}

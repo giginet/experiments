@@ -1,0 +1,64 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <math.h>
+#include "define.h"
+
+/*-*-c++-*-*/
+
+int action(int *sugar_neighbor_info,int *others_neighbor_info,int sugar,int met, int vis, int acq)
+{
+  
+  //視覚情報と自分の状態から行動を決定
+
+  //sugar_neighbor_info[0] 上視界内に現在地より砂糖が多い場所があれば1, それ以外は0
+  //sugar_neighbor_info[1] 下視界内に現在地より砂糖が多い場所があれば1, それ以外は0
+  //sugar_neighbor_info[2] 左視界内に現在地より砂糖が多い場所があれば1, それ以外は0
+  //sugar_neighbor_info[3] 右視界内に現在地より砂糖が多い場所があれば1, それ以外は0
+
+  //others_neighbor_info[0] 上近傍で他のエージェントに接していれば1, それ以外は0
+  //others_neighbor_info[1] 下近傍で他のエージェントに接していれば1, それ以外は0
+  //others_neighbor_info[2] 左近傍で他のエージェントに接していれば1, それ以外は0
+  //others_neighbor_info[3] 右近傍で他のエージェントに接していれば1, それ以外は0
+
+  //sugar 現在の砂糖保有量
+  //met   １ターンあたりの砂糖消費量
+  //vis   視界の大きさ
+  //acq   1ターンに摂取できる砂糖の量
+
+  //行動出力 0:上 1:下 2:左 3:右 4:停止 
+  
+  int i,j,k;
+
+  int sugar_list[4];
+  int num_sugar_direction=0;
+
+  int a,rnd;
+
+  for(i=0;i<4;i++)
+    {
+      if(sugar_neighbor_info[i] == 1)
+	{ 
+	  sugar_list[num_sugar_direction]=i;
+	  num_sugar_direction++;
+	}
+    }
+  
+  if(num_sugar_direction>0)
+    {
+      a = sugar_list[ rand()%num_sugar_direction ];
+    }
+  else
+    {
+      rnd=rand()%6;
+      if (rnd==5) rnd=0;
+      a = rnd;
+      
+    }
+
+  return a;
+
+}
+
+
+
