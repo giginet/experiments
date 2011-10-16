@@ -58,7 +58,7 @@ int Agent::action(){
   }else if(list_others.size() == 4){
     return 4; 
   }else if(!list_sugar.empty()){
-    if(sugar < min(met * 300 * 15/vis, 3000)){
+    if(sugar < min(met * 175 * 15/vis, 3000)){
       return approach(false);
     }else if(sugar < 5000){
       return random_walk(true);
