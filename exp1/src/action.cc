@@ -52,24 +52,22 @@ bool contains(vector<int> v, int i){
 }
 
 int Agent::action(){
-  int direction = 4;
   int t = (int)turn();
-  if(t <= 0 || met >= 10){
-    direction = escape(false);
+  if(t <= 0 || met > 10){
+    return escape(true);
   }else if(list_others.size() == 4){
-    direction = 4; 
+    return 4; 
   }else if(!list_sugar.empty()){
-    if(sugar < min(t/vis * 85, 2000)){
-      direction = approach(false);
+    if(sugar < min(met * 300 * 15/vis, 3000)){
+      return approach(false);
     }else if(sugar < 5000){
-      direction = random_walk(true);
+      return random_walk(true);
     }else{
-      direction = escape(true);
+      return escape(true);
     }
   }else if(list_sugar.empty()){
-    direction = random_walk(true);
+    return random_walk(true);
   }
-  return direction;
 }
 
 int Agent::escape(bool stream){
